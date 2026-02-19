@@ -6,26 +6,32 @@ function ChatPage() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
+  // ⭐ normalization function (FINAL FIX)
+  const normalize = (str) =>
+    str.toLowerCase().replace(/[^\w\s]/g, "").trim();
+
   const handleSubmit = (e) => {
-  e.preventDefault();
+    e.preventDefault();
+    if (!input.trim()) return;
 
-  const userMessage = { sender: "user", text: input };
+    const userMessage = { sender: "user", text: input };
 
-  const normalizedInput = input.trim();
+    // ⭐ normalized matching
+    const normalizedInput = normalize(input);
 
-  const key = Object.keys(sampleData).find(
-    (k) => k.toLowerCase() === normalizedInput.toLowerCase()
-  );
+    const key = Object.keys(sampleData).find(
+      (k) => normalize(k) === normalizedInput
+    );
 
-  const reply = key
-    ? sampleData[key]
-    : "Sorry, Did not understand your query!";
+    const reply = key
+      ? sampleData[key]
+      : "Sorry, Did not understand your query!";
 
-  const botMessage = { sender: "bot", text: reply };
+    const botMessage = { sender: "bot", text: reply };
 
-  setMessages((prev) => [...prev, userMessage, botMessage]);
-  setInput("");
-};
+    setMessages((prev) => [...prev, userMessage, botMessage]);
+    setInput("");
+  };
 
   const saveConversation = () => {
     const prev = JSON.parse(localStorage.getItem("chats")) || [];
@@ -51,11 +57,7 @@ function ChatPage() {
 
             <div className="cards">
               {Object.keys(sampleData).map((q, i) => (
-                <div
-                  key={i}
-                  className="card"
-                  onClick={() => setInput(q)}
-                >
+                <div key={i} className="card" onClick={() => setInput(q)}>
                   <h3>{q}</h3>
                   <p>Get immediate AI generated response</p>
                 </div>
@@ -66,26 +68,23 @@ function ChatPage() {
 
         {/* ⭐ CHAT SECTION */}
         <section className="chat-area">
-  {messages.map((msg, index) => (
-    <div key={index} className={`message-row ${msg.sender}`}>
-      <div className="avatar"></div>
+          {messages.map((msg, index) => (
+            <div key={index} className={`message-row ${msg.sender}`}>
+              <div className="avatar"></div>
 
-      <div className="message-bubble">
-        {msg.sender === "bot" && <span>Soul AI</span>}
+              <div className="message-bubble">
+                {msg.sender === "bot" && <span>Soul AI</span>}
 
-        {/* REQUIRED p tag */}
-        <p>{msg.text}</p>
+                {/* ⭐ Cypress requires p */}
+                <p>{msg.text}</p>
 
-        {/* 👍 👎 only for bot */}
-        {msg.sender === "bot" && (
-          <div className="feedback-icons">
-            👍 👎
-          </div>
-        )}
-      </div>
-    </div>
-  ))}
-</section>
+                {msg.sender === "bot" && (
+                  <div className="feedback-icons">👍 👎</div>
+                )}
+              </div>
+            </div>
+          ))}
+        </section>
 
         {/* ⭐ INPUT */}
         <form onSubmit={handleSubmit} className="input-row">
@@ -106,3 +105,4 @@ function ChatPage() {
 }
 
 export default ChatPage;
+
