@@ -1,23 +1,34 @@
-import { useNavigate } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
 
 function HistoryPage() {
-  const navigate = useNavigate();
   const chats = JSON.parse(localStorage.getItem("chats")) || [];
 
   return (
-    <div className="history-container">
-      <h2>Conversation History</h2>
-      <button onClick={() => navigate("/")}>New Chat</button>
+    <div className="app-layout">
+      <Sidebar />
 
-      {chats.map((chat) => (
-        <div key={chat.id} className="history-card">
-          {chat.messages.map((msg, i) => (
-            <div key={i}>
-              <strong>{msg.sender}:</strong> {msg.text}
-            </div>
-          ))}
-        </div>
-      ))}
+      <main className="main">
+        <header>
+          <h2>Conversation History</h2>
+        </header>
+
+        {chats.map((chat, i) => (
+          <div key={i} style={{ marginBottom: 20 }}>
+            {/* SAFETY FIX */}
+            {Array.isArray(chat) ? (
+              chat.map((msg, j) => (
+                <div key={j}>
+                  <strong>{msg.sender}</strong>: {msg.text}
+                </div>
+              ))
+            ) : (
+              <div>
+                <strong>{chat.sender}</strong>: {chat.text}
+              </div>
+            )}
+          </div>
+        ))}
+      </main>
     </div>
   );
 }

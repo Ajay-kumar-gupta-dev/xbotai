@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { sampleData } from "../data";
 import Sidebar from "../components/Sidebar";
-import Message from "../components/Message";
+import { sampleData } from "../data";
 
 function ChatPage() {
   const [messages, setMessages] = useState([]);
@@ -9,29 +8,40 @@ function ChatPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!input.trim()) return;
 
-    const user = { sender: "user", text: input };
+    const userMessage = { sender: "user", text: input };
 
-    const botReply = sampleData[input]
+    const reply = sampleData[input]
       ? sampleData[input]
       : "Sorry, Did not understand your query!";
 
-    const bot = { sender: "bot", text: botReply };
+    const botMessage = { sender: "bot", text: reply };
 
-    setMessages([...messages, user, bot]);
+    setMessages((prev) => [...prev, userMessage, botMessage]);
     setInput("");
+  };
+
+  const saveConversation = () => {
+    const prev = JSON.parse(localStorage.getItem("chats")) || [];
+    prev.push([...messages]);
+    localStorage.setItem("chats", JSON.stringify(prev));
   };
 
   return (
     <div className="app-layout">
       <Sidebar />
 
-      <div className="main">
-        <h1 className="title">Bot AI</h1>
+      <main className="main">
+        <header>
+          <h1>Bot AI</h1>
+        </header>
 
+        {/* ⭐ HERO SECTION */}
         {messages.length === 0 && (
           <div className="hero">
             <h2>How Can I Help You Today?</h2>
+
             <div className="hero-circle"></div>
 
             <div className="cards">
@@ -49,22 +59,43 @@ function ChatPage() {
           </div>
         )}
 
-        <div className="chat-area">
-          {messages.map((m, i) => (
-            <Message key={i} msg={m} />
-          ))}
-        </div>
+        {/* ⭐ CHAT SECTION */}
+        <section className="chat-area">
+  {messages.map((msg, index) => (
+    <div key={index} className={`message-row ${msg.sender}`}>
+      <div className="avatar"></div>
 
-        <form className="input-row" onSubmit={handleSubmit}>
+      <div className="message-bubble">
+        {msg.sender === "bot" && <span>Soul AI</span>}
+
+        {/* REQUIRED p tag */}
+        <p>{msg.text}</p>
+
+        {/* 👍 👎 only for bot */}
+        {msg.sender === "bot" && (
+          <div className="feedback-icons">
+            👍 👎
+          </div>
+        )}
+      </div>
+    </div>
+  ))}
+</section>
+
+        {/* ⭐ INPUT */}
+        <form onSubmit={handleSubmit} className="input-row">
           <input
-            placeholder="Message Bot AI…"
+            placeholder="Message Bot AI..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
           />
+
           <button type="submit">Ask</button>
-          <button type="button">Save</button>
+          <button type="button" onClick={saveConversation}>
+            Save
+          </button>
         </form>
-      </div>
+      </main>
     </div>
   );
 }

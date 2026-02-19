@@ -1,22 +1,22 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Sidebar() {
-  const navigate = useNavigate();
-
   return (
-    <div className="sidebar">
+    <aside className="sidebar">
       <div className="logo-row">
         <div className="logo-circle"></div>
-        <span className="new-chat">New Chat</span>
+
+        {/* REQUIRED anchor for test */}
+        <Link to="/" className="new-chat">
+          New Chat
+        </Link>
       </div>
 
-      <button
-        className="past-btn"
-        onClick={() => navigate("/history")}
-      >
+      {/* REQUIRED anchor for test */}
+      <Link to="/history" className="past-btn">
         Past Conversations
-      </button>
-    </div>
+      </Link>
+    </aside>
   );
 }
 
