@@ -7,20 +7,25 @@ function ChatPage() {
   const [input, setInput] = useState("");
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!input.trim()) return;
+  e.preventDefault();
 
-    const userMessage = { sender: "user", text: input };
+  const userMessage = { sender: "user", text: input };
 
-    const reply = sampleData[input]
-      ? sampleData[input]
-      : "Sorry, Did not understand your query!";
+  const normalizedInput = input.trim();
 
-    const botMessage = { sender: "bot", text: reply };
+  const key = Object.keys(sampleData).find(
+    (k) => k.toLowerCase() === normalizedInput.toLowerCase()
+  );
 
-    setMessages((prev) => [...prev, userMessage, botMessage]);
-    setInput("");
-  };
+  const reply = key
+    ? sampleData[key]
+    : "Sorry, Did not understand your query!";
+
+  const botMessage = { sender: "bot", text: reply };
+
+  setMessages((prev) => [...prev, userMessage, botMessage]);
+  setInput("");
+};
 
   const saveConversation = () => {
     const prev = JSON.parse(localStorage.getItem("chats")) || [];
